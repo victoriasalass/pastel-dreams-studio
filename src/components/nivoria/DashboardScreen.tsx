@@ -32,7 +32,7 @@ const statusIcon = (s: TaskStatus) => {
   }
 };
 
-const DashboardScreen = ({ userName }: DashboardScreenProps) => {
+const DashboardScreen = ({ userName, onNavigateRoutine }: DashboardScreenProps) => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
   const toggleTask = (index: number) => {
@@ -52,6 +52,36 @@ const DashboardScreen = ({ userName }: DashboardScreenProps) => {
       <motion.div className="mb-6" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
         <p className="text-muted-foreground text-sm font-body">¡Hola, {userName}! 👋</p>
         <h1 className="text-2xl font-display font-bold text-foreground">Tu día de hoy</h1>
+      </motion.div>
+
+      {/* Main action cards */}
+      <motion.div className="grid grid-cols-2 gap-3 mb-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
+        <motion.button
+          onClick={onNavigateRoutine}
+          className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors text-center"
+          whileTap={{ scale: 0.96 }}
+        >
+          <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+            <Stethoscope size={24} className="text-primary" />
+          </div>
+          <div>
+            <p className="font-display font-bold text-sm text-foreground leading-tight">Seguimiento a un diagnóstico</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Gestiona tu tratamiento</p>
+          </div>
+        </motion.button>
+        <motion.button
+          onClick={onNavigateRoutine}
+          className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-accent/10 border border-accent/20 hover:bg-accent/20 transition-colors text-center"
+          whileTap={{ scale: 0.96 }}
+        >
+          <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
+            <Plus size={24} className="text-accent" />
+          </div>
+          <div>
+            <p className="font-display font-bold text-sm text-foreground leading-tight">Agregar rutina</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Sin diagnóstico</p>
+          </div>
+        </motion.button>
       </motion.div>
 
       {/* Progress cards */}
