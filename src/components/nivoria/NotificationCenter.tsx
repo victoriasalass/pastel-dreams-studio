@@ -80,8 +80,14 @@ export const NotificationToast = ({ notification, onDismiss }: { notification: N
   return (
     <motion.div
       initial={{ opacity: 0, y: -60, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        x: [0, -4, 4, -3, 3, -1, 1, 0],
+      }}
       exit={{ opacity: 0, y: -30, scale: 0.95 }}
+      transition={{ x: { duration: 0.5, delay: 0.2 } }}
       className={`flex items-start gap-3 p-4 rounded-2xl ${config.bg} border ${config.border} shadow-soft backdrop-blur-sm`}
     >
       <div className="mt-0.5 shrink-0">{config.icon}</div>
