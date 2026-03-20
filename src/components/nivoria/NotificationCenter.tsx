@@ -186,11 +186,24 @@ export default NotificationCenter;
 export const useSimulatedNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [toast, setToast] = useState<Notification | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const soundEnabledRef = useRef(true);
+
+  const toggleSound = useCallback(() => {
+    setSoundEnabled(prev => {
+      soundEnabledRef.current = !prev;
+      return !prev;
+    });
+  }, []);
 
   const addNotification = useCallback((n: Omit<Notification, "id" | "read">) => {
     const notif: Notification = { ...n, id: crypto.randomUUID(), read: false };
     setNotifications(prev => [notif, ...prev]);
     setToast(notif);
+    if (soundEnabledRef.current) {
+      playNotificationSound(n.type);
+      triggerVibration(n.type);
+    }
   }, []);
 
   const dismiss = useCallback((id: string) => {
