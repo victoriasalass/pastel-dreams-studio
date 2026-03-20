@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { LayoutDashboard, Music, CalendarDays } from "lucide-react";
+import { LayoutDashboard, Music, CalendarDays, User } from "lucide-react";
 import type { Screen } from "@/pages/Index";
 
 interface BottomNavProps {
@@ -11,6 +11,7 @@ const items: { screen: Screen; icon: React.ReactNode; label: string }[] = [
   { screen: "dashboard", icon: <LayoutDashboard size={20} />, label: "Inicio" },
   { screen: "playlists", icon: <Music size={20} />, label: "Playlists" },
   { screen: "routine", icon: <CalendarDays size={20} />, label: "Rutina" },
+  { screen: "profile", icon: <User size={20} />, label: "Perfil" },
 ];
 
 const BottomNav = ({ current, onNavigate }: BottomNavProps) => (

@@ -46,6 +46,11 @@ const Index = () => {
                 <RoutineScreen />
               </motion.div>
             )}
+            {screen === "profile" && (
+              <motion.div key="profile" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+                <ProfileScreen userName={userName} onLogout={() => { setUserName(""); setScreen("login"); }} />
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
         {isLoggedIn && <BottomNav current={screen} onNavigate={setScreen} />}
