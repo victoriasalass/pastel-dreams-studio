@@ -21,22 +21,24 @@ const RachaInformacionScreen = ({ onBack }: { onBack?: () => void }) => {
         <p className="text-xs font-body text-muted-foreground mt-1">motivaciones por dia :)</p>
       </div>
 
-      <div className="rounded-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 border-2 border-pink-400 p-5 shadow-lg">
-        <p className="text-sm font-body font-medium text-white text-center leading-relaxed">
-          "No necesitas ser perfecto, solo necesitas empezar. Cada pequeño esfuerzo que haces hoy es un paso hacia la persona que quieres ser."
-        </p>
-      </div>
+      <div className="mt-6 flex flex-wrap gap-4 justify-center">
+        <div className="flex-1 min-w-[280px] rounded-2xl bg-gradient-to-r from-blue-200 via-pink-100 to-blue-100 border-2 border-pink-300 p-5 shadow-lg">
+          <p className="text-sm font-body font-medium text-purple-900 text-center leading-relaxed">
+            "No necesitas ser perfecto, solo necesitas empezar. Cada pequeño esfuerzo que haces hoy es un paso hacia la persona que quieres ser."
+          </p>
+        </div>
 
-      <div className="mt-4 rounded-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-pink-300 border-2 border-purple-300 p-5 shadow-lg">
-        <p className="text-sm font-body font-medium text-white text-center leading-relaxed">
-          "Los resultados no vienen de lo que haces una vez, sino de lo que haces constantemente."
-        </p>
-      </div>
+        <div className="flex-1 min-w-[280px] rounded-2xl bg-gradient-to-r from-pink-200 via-blue-100 to-pink-100 border-2 border-blue-300 p-5 shadow-lg">
+          <p className="text-sm font-body font-medium text-purple-900 text-center leading-relaxed">
+            "Los resultados no vienen de lo que haces una vez, sino de lo que haces constantemente."
+          </p>
+        </div>
 
-      <div className="mt-4 rounded-2xl bg-gradient-to-r from-blue-300 via-pink-200 to-blue-200 border-2 border-blue-300 p-5 shadow-lg">
-        <p className="text-sm font-body font-medium text-blue-900 text-center leading-relaxed">
-          "Las grandes transformaciones nacen de rutinas simples repetidas con constancia."
-        </p>
+        <div className="flex-1 min-w-[280px] rounded-2xl bg-gradient-to-r from-blue-100 via-pink-200 to-blue-200 border-2 border-pink-300 p-5 shadow-lg">
+          <p className="text-sm font-body font-medium text-purple-900 text-center leading-relaxed">
+            "Las grandes transformaciones nacen de rutinas simples repetidas con constancia."
+          </p>
+        </div>
       </div>
 
       <div className="mt-6 rounded-2xl bg-white/60 border border-pink-200/50 p-4 shadow-soft">
