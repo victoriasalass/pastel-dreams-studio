@@ -14,7 +14,7 @@ export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("login");
   const [userName, setUserName] = useState("");
-  const { notifications, toast, addNotification, dismiss, clearAll, dismissToast } = useSimulatedNotifications();
+  const { notifications, toast, addNotification, dismiss, clearAll, dismissToast, soundEnabled, toggleSound } = useSimulatedNotifications();
 
   const isLoggedIn = screen !== "login" && screen !== "register";
 
@@ -25,7 +25,7 @@ const Index = () => {
         {isLoggedIn && (
           <div className="flex items-center justify-between px-6 pt-4 pb-1 shrink-0">
             <p className="text-xs text-muted-foreground font-body">NIVORIA</p>
-            <NotificationCenter notifications={notifications} onDismiss={dismiss} onClear={clearAll} />
+            <NotificationCenter notifications={notifications} onDismiss={dismiss} onClear={clearAll} soundEnabled={soundEnabled} onToggleSound={toggleSound} />
           </div>
         )}
 
