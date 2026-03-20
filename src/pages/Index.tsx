@@ -62,7 +62,9 @@ const Index = () => {
             )}
             {screen === "routine" && (
               <motion.div key="routine" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-                <RoutineScreen />
+                <RoutineScreen onAddReminder={(title, message) => {
+                  addNotification({ title, message, type: "reminder", time: new Date().toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" }) });
+                }} />
               </motion.div>
             )}
             {screen === "profile" && (
