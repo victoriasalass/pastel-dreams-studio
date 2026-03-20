@@ -8,7 +8,7 @@ import RoutineScreen from "@/components/nivoria/RoutineScreen";
 import ProfileScreen from "@/components/nivoria/ProfileScreen";
 import BottomNav from "@/components/nivoria/BottomNav";
 
-export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine";
+export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine" | "profile";
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("login");
