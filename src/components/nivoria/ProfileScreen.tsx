@@ -5,6 +5,8 @@ import { User, Music, Headphones, Plus, LogOut, Settings, CircleCheck as CheckCi
 interface ProfileScreenProps {
   userName: string;
   onLogout: () => void;
+  /** Abre la pantalla Playlists (misma que el ítem de la barra inferior) */
+  onNavigatePlaylists?: () => void;
 }
 
 interface ConnectedService {
@@ -14,7 +16,7 @@ interface ConnectedService {
   connected: boolean;
 }
 
-const ProfileScreen = ({ userName, onLogout }: ProfileScreenProps) => {
+const ProfileScreen = ({ userName, onLogout, onNavigatePlaylists }: ProfileScreenProps) => {
   const [services, setServices] = useState<ConnectedService[]>([
     { name: "Spotify", icon: <Music size={20} />, username: "nolly_music", connected: true },
     { name: "Apple Music", icon: <Headphones size={20} />, username: "Sincronización activa", connected: true },
@@ -60,20 +62,38 @@ const ProfileScreen = ({ userName, onLogout }: ProfileScreenProps) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        {stats.map((stat, i) => (
-          <div
-            key={i}
-            className={`rounded-2xl p-4 text-center border border-border/50 ${
-              i % 4 === 0 ? "bg-pastel-purple/25" :
-              i % 4 === 1 ? "bg-pastel-pink/25" :
-              i % 4 === 2 ? "bg-pastel-blue/25" :
-              "bg-pastel-lavender/25"
-            }`}
-          >
-            <p className="text-2xl font-display font-bold text-foreground">{stat.value}</p>
-            <p className="text-xs text-muted-foreground">{stat.label}</p>
-          </div>
-        ))}
+        {stats.map((stat, i) => {
+          const cardClass = `rounded-2xl p-4 text-center border border-border/50 ${
+            i % 4 === 0 ? "bg-pastel-purple/25" :
+            i % 4 === 1 ? "bg-pastel-pink/25" :
+            i % 4 === 2 ? "bg-pastel-blue/25" :
+            "bg-pastel-lavender/25"
+          }`;
+          const inner = (
+            <>
+              <p className="text-2xl font-display font-bold text-foreground">{stat.value}</p>
+              <p className="text-xs text-muted-foreground">{stat.label}</p>
+            </>
+          );
+          if (stat.label === "Playlists" && onNavigatePlaylists) {
+            return (
+              <motion.button
+                key={i}
+                type="button"
+                onClick={onNavigatePlaylists}
+                className={`${cardClass} w-full cursor-pointer hover:opacity-90 transition-opacity`}
+                whileTap={{ scale: 0.98 }}
+              >
+                {inner}
+              </motion.button>
+            );
+          }
+          return (
+            <div key={i} className={cardClass}>
+              {inner}
+            </div>
+          );
+        })}
       </motion.div>
 
       {/* Connected services */}

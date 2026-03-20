@@ -34,7 +34,7 @@ const Index = () => {
             )}
             {screen === "dashboard" && (
               <motion.div key="dashboard" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-                <DashboardScreen userName={userName} onNavigateRoutine={() => setScreen("routine")} />
+                <DashboardScreen userName={userName} onNavigate={setScreen} />
               </motion.div>
             )}
             {screen === "playlists" && (
@@ -49,7 +49,11 @@ const Index = () => {
             )}
             {screen === "profile" && (
               <motion.div key="profile" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-                <ProfileScreen userName={userName} onLogout={() => { setUserName(""); setScreen("login"); }} />
+                <ProfileScreen
+                  userName={userName}
+                  onLogout={() => { setUserName(""); setScreen("login"); }}
+                  onNavigatePlaylists={() => setScreen("playlists")}
+                />
               </motion.div>
             )}
           </AnimatePresence>

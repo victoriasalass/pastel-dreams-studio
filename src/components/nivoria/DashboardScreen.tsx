@@ -1,9 +1,15 @@
+import type { Screen } from "@/pages/Index";
+
+/** Mismas pantallas que el ítem «Playlists» / «Rutina» de la barra inferior */
+type DashboardNavTarget = Extract<Screen, "playlists" | "routine">;
+
 interface DashboardScreenProps {
   userName: string;
-  onNavigateRoutine?: () => void;
+  /** Usa el mismo `setScreen` que `BottomNav` para que el ítem activo coincida */
+  onNavigate?: (screen: DashboardNavTarget) => void;
 }
 
-const DashboardScreen = ({ userName, onNavigateRoutine }: DashboardScreenProps) => {
+const DashboardScreen = ({ userName, onNavigate }: DashboardScreenProps) => {
   return (
     <div className="px-6 pt-12 pb-24 bg-pastel-pink/30 min-h-full">
       {/* Header with Inicio tab */}
@@ -24,15 +30,20 @@ const DashboardScreen = ({ userName, onNavigateRoutine }: DashboardScreenProps) 
         
         {/* Quick actions */}
         <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
-          <button 
-            onClick={onNavigateRoutine}
+          <button
+            type="button"
+            onClick={() => onNavigate?.("routine")}
             className="p-4 rounded-2xl bg-white/50 border border-pink-200 hover:bg-white/70 transition-colors"
           >
             <div className="text-2xl mb-2">📅</div>
             <span className="text-sm font-display font-medium text-foreground">Mi Rutina</span>
           </button>
           
-          <button className="p-4 rounded-2xl bg-white/50 border border-pink-200 hover:bg-white/70 transition-colors">
+          <button
+            type="button"
+            onClick={() => onNavigate?.("playlists")}
+            className="p-4 rounded-2xl bg-white/50 border border-pink-200 hover:bg-white/70 transition-colors"
+          >
             <div className="text-2xl mb-2">🎵</div>
             <span className="text-sm font-display font-medium text-foreground">Playlists</span>
           </button>
