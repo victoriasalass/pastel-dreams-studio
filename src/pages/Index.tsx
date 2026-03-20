@@ -18,7 +18,7 @@ const Index = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="relative w-full max-w-[390px] h-[844px] rounded-[2.5rem] overflow-hidden shadow-soft border border-border gradient-card flex flex-col">
+      <div className="relative w-full max-w-[390px] h-[844px] rounded-[2.5rem] overflow-hidden shadow-soft border border-border bg-pastel-pink/20 flex flex-col">
 
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
           <AnimatePresence mode="wait">

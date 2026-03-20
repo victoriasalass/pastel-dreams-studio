@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { User, Music, Headphones, Plus, LogOut, Settings, CheckCircle, ChevronRight } from "lucide-react";
+import { User, Music, Headphones, Plus, LogOut, Settings, CircleCheck as CheckCircle, ChevronRight } from "lucide-react";
 
 interface ProfileScreenProps {
   userName: string;
@@ -39,7 +39,7 @@ const ProfileScreen = ({ userName, onLogout }: ProfileScreenProps) => {
     .slice(0, 2);
 
   return (
-    <div className="px-6 pt-12 pb-24">
+    <div className="px-6 pt-12 pb-24 bg-pastel-pink/30 min-h-full">
       {/* Header */}
       <motion.div
         className="flex flex-col items-center mb-8"

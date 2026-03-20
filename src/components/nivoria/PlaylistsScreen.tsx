@@ -41,7 +41,7 @@ const PlaylistsScreen = () => {
   };
 
   return (
-    <div className="px-6 pt-12 pb-24">
+    <div className="px-6 pt-12 pb-24 bg-pastel-pink/30 min-h-full">
       <motion.div className="mb-6" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-display font-bold text-foreground">TUS PLAYLIST+</h1>
         <p className="text-sm text-muted-foreground">Tu curación personal de ritmos y texturas.</p>
