@@ -700,8 +700,10 @@ const PlaylistsScreen = () => {
       )}
 
       {/* Playlist completas */}
-      <div className="mt-6 p-4 rounded-2xl bg-pastel-lavender/20 border border-primary/20">
-        <p className="text-sm font-display font-semibold text-foreground mb-3">playlist completas</p>
+      <div className="mt-6 p-4 rounded-2xl bg-pastel-purple/45 border border-pastel-purple/70">
+        <p className="text-sm font-display font-semibold text-foreground mb-3">
+          playlist completas
+        </p>
 
         <div className="mb-3">
           <p className="text-[11px] text-muted-foreground font-body mb-2">Rutina</p>
