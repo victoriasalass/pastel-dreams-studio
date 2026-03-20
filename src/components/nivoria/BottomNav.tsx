@@ -15,7 +15,7 @@ const items: { screen: Screen; icon: React.ReactNode; label: string }[] = [
 ];
 
 const BottomNav = ({ current, onNavigate }: BottomNavProps) => (
-  <div className="glass border-t border-border px-6 py-3 flex justify-around shrink-0">
+  <div className="bg-pink-600 border-t border-pink-700 px-6 py-3 flex justify-around shrink-0">
     {items.map((item) => {
       const active = current === item.screen;
       return (
@@ -23,14 +23,14 @@ const BottomNav = ({ current, onNavigate }: BottomNavProps) => (
           key={item.screen}
           onClick={() => onNavigate(item.screen)}
           className={`flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-colors ${
-            active ? "text-primary" : "text-muted-foreground"
+            active ? "text-black" : "text-black/70"
           }`}
           whileTap={{ scale: 0.9 }}
         >
           {item.icon}
-          <span className="text-[10px] font-display font-medium">{item.label}</span>
+          <span className="text-[10px] font-display font-bold text-black">{item.label}</span>
           {active && (
-            <motion.div className="w-1 h-1 rounded-full bg-primary" layoutId="nav-dot" />
+            <motion.div className="w-1 h-1 rounded-full bg-black" layoutId="nav-dot" />
           )}
         </motion.button>
       );
