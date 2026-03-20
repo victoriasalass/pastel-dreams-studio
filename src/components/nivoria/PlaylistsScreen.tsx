@@ -27,6 +27,17 @@ type YouTubePlaylist = {
 };
 
 const YTM_SELECTED_PLAYLIST_KEY = "nivoria.ytm.selectedPlaylist";
+const YTM_SAVED_PLAYLIST_COUNT_KEY = "nivoria.ytm.savedPlaylistCount";
+const ROUTINES_KEY = "nivoria.routines";
+const ROUTINE_PLAYLISTS_KEY = "nivoria.routines.playlistsByNumber";
+const ROUTINE_SELECTED_NUMBER_KEY = "nivoria.routines.selectedNumber";
+const YTM_CREATED_PLAYLISTS_KEY = "nivoria.ytm.createdPlaylists";
+
+type Song = {
+  id: string;
+  title: string;
+  artist: string;
+};
 
 const PlaylistsScreen = () => {
   const [showSpotifyConnect, setShowSpotifyConnect] = useState(false);
@@ -37,7 +48,33 @@ const PlaylistsScreen = () => {
   const [ytmError, setYtmError] = useState<string | null>(null);
   const [selectedYtmPlaylist, setSelectedYtmPlaylist] = useState<YouTubePlaylist | null>(null);
 
+  const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
+  const [newPlaylistName, setNewPlaylistName] = useState("");
+  const [selectedSongIds, setSelectedSongIds] = useState<Record<string, boolean>>({});
+  const [createdPlaylists, setCreatedPlaylists] = useState<Array<{ title: string; songs: Song[] }>>([]);
+  const [savedPlaylistCount, setSavedPlaylistCount] = useState(0);
+  const [routineNumbers, setRoutineNumbers] = useState<number[]>([]);
+  const [selectedRoutineNumber, setSelectedRoutineNumber] = useState<number | null>(null);
+  const [routinePlaylistAddMessage, setRoutinePlaylistAddMessage] = useState<string | null>(null);
+
   const googleClientId = useMemo(() => import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined, []);
+  const sampleSongs = useMemo<Song[]>(
+    () => [
+      { id: "s1", title: "Dreamscape", artist: "Pastel Waves" },
+      { id: "s2", title: "Midnight Bloom", artist: "Luna Garden" },
+      { id: "s3", title: "Soft Echoes", artist: "Velvet Frequency" },
+      { id: "s4", title: "Pink Skyline", artist: "Nivoria Studio" },
+      { id: "s5", title: "Aurora Steps", artist: "Cloud Runner" },
+      { id: "s6", title: "Café Nebula", artist: "Star Latte" },
+      { id: "s7", title: "Sunset Notes", artist: "Golden Delay" },
+      { id: "s8", title: "Cotton Clouds", artist: "Daydream District" },
+      { id: "s9", title: "Breeze Parade", artist: "Tangerine Transit" },
+    ],
+    []
+  );
+
+  const selectedSongs = useMemo(() => sampleSongs.filter((s) => selectedSongIds[s.id]), [sampleSongs, selectedSongIds]);
+  const canSavePlaylist = selectedSongs.length > 0;
 
   useEffect(() => {
     const raw = localStorage.getItem(YTM_SELECTED_PLAYLIST_KEY);
@@ -49,6 +86,74 @@ const PlaylistsScreen = () => {
       // ignore
     }
   }, []);
+
+  useEffect(() => {
+    const raw = localStorage.getItem(YTM_SAVED_PLAYLIST_COUNT_KEY);
+    const n = raw ? Number(raw) : 0;
+    if (Number.isFinite(n) && n > 0) setSavedPlaylistCount(n);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ROUTINES_KEY);
+      if (!raw) {
+        setRoutineNumbers([]);
+        setSelectedRoutineNumber(null);
+        return;
+      }
+
+      const parsed = JSON.parse(raw) as Array<{ number?: unknown }>;
+      const nums = Array.isArray(parsed)
+        ? parsed
+            .map((r) => (typeof r?.number === "number" ? r.number : null))
+            .filter((n): n is number => n !== null)
+        : [];
+
+      const uniqueSorted = Array.from(new Set(nums)).sort((a, b) => a - b);
+      setRoutineNumbers(uniqueSorted);
+
+      const rawSelected = localStorage.getItem(ROUTINE_SELECTED_NUMBER_KEY);
+      const selected = rawSelected ? Number(rawSelected) : NaN;
+      const validSelected =
+        Number.isFinite(selected) && uniqueSorted.includes(selected) ? selected : null;
+
+      setSelectedRoutineNumber(validSelected ?? (uniqueSorted.length > 0 ? uniqueSorted[0] : null));
+    } catch {
+      setRoutineNumbers([]);
+      setSelectedRoutineNumber(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedRoutineNumber == null) {
+      localStorage.removeItem(ROUTINE_SELECTED_NUMBER_KEY);
+      return;
+    }
+    localStorage.setItem(ROUTINE_SELECTED_NUMBER_KEY, String(selectedRoutineNumber));
+  }, [selectedRoutineNumber]);
+
+  useEffect(() => {
+    setRoutinePlaylistAddMessage(null);
+  }, [selectedRoutineNumber]);
+
+  useEffect(() => {
+    const raw = localStorage.getItem(YTM_CREATED_PLAYLISTS_KEY);
+    if (!raw) return;
+    try {
+      const parsed = JSON.parse(raw) as Array<{ title: string; songs: Song[] }>;
+      if (Array.isArray(parsed)) {
+        setCreatedPlaylists(
+          parsed.filter((p) => typeof p?.title === "string" && Array.isArray(p?.songs))
+        );
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(YTM_CREATED_PLAYLISTS_KEY, JSON.stringify(createdPlaylists));
+  }, [createdPlaylists]);
 
   useEffect(() => {
     if (!selectedYtmPlaylist) return;
@@ -314,13 +419,94 @@ const PlaylistsScreen = () => {
       >
         <button
           type="button"
-          onClick={() => setShowYouTubeConnect(true)}
+          onClick={() => setShowCreatePlaylist(true)}
           className="flex items-center gap-3 px-8 py-4 rounded-2xl gradient-button text-primary-foreground font-display font-bold text-sm shadow-soft"
         >
           <Plus size={20} />
           AGREGAR PLAYLIST
         </button>
       </motion.div>
+
+      {showCreatePlaylist && (
+        <motion.div
+          className="mt-6 p-4 rounded-2xl bg-card border border-border"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <p className="text-sm font-display font-semibold text-foreground mb-3">Crear playlist</p>
+
+          <input
+            value={newPlaylistName}
+            onChange={(e) => setNewPlaylistName(e.target.value)}
+            placeholder="Nombre de la playlist"
+            className="w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-sm font-body outline-none focus:ring-2 focus:ring-primary/40 mb-4"
+          />
+
+          <div className="max-h-44 overflow-y-auto space-y-2 pr-1">
+            {sampleSongs.map((song) => {
+              const active = !!selectedSongIds[song.id];
+              return (
+                <button
+                  key={song.id}
+                  type="button"
+                  onClick={() =>
+                    setSelectedSongIds((prev) => ({
+                      ...prev,
+                      [song.id]: !prev[song.id],
+                    }))
+                  }
+                  className={`w-full flex items-center gap-3 p-3 rounded-2xl border text-left transition-colors ${
+                    active ? "border-primary/50 bg-pastel-pink/25" : "border-border bg-background/40 hover:bg-background/60"
+                  }`}
+                >
+                  <div
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                      active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {active ? "✓" : "+"}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-display font-semibold text-foreground truncate">{song.title}</p>
+                    <p className="text-[11px] text-muted-foreground font-body truncate">{song.artist}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex gap-3 mt-4">
+            <button
+              type="button"
+              onClick={() => {
+                setShowCreatePlaylist(false);
+                setNewPlaylistName("");
+                setSelectedSongIds({});
+              }}
+              className="flex-1 rounded-xl border border-border bg-muted/40 px-4 py-3 text-xs font-display font-bold text-foreground hover:bg-muted/60 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              disabled={!canSavePlaylist}
+              onClick={() => {
+                const nextCount = savedPlaylistCount + 1;
+                const title = newPlaylistName.trim() || `playlist ${nextCount}`;
+                setSavedPlaylistCount(nextCount);
+                localStorage.setItem(YTM_SAVED_PLAYLIST_COUNT_KEY, String(nextCount));
+                setCreatedPlaylists((prev) => [...prev, { title, songs: selectedSongs }]);
+                setShowCreatePlaylist(false);
+                setNewPlaylistName("");
+                setSelectedSongIds({});
+              }}
+              className="flex-1 rounded-xl bg-primary/90 px-4 py-3 text-xs font-display font-bold text-primary-foreground hover:bg-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Guardar
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {selectedYtmPlaylist && (
         <motion.div
@@ -351,24 +537,143 @@ const PlaylistsScreen = () => {
               Quitar
             </button>
           </div>
+
+          <button
+            type="button"
+            disabled={selectedRoutineNumber == null}
+            onClick={() => {
+              if (selectedRoutineNumber == null) return;
+              const playlistTitle = selectedYtmPlaylist.title;
+
+              const raw = localStorage.getItem(ROUTINE_PLAYLISTS_KEY);
+              let map: Record<string, string[]> = {};
+              try {
+                map = raw ? (JSON.parse(raw) as Record<string, string[]>) : {};
+              } catch {
+                map = {};
+              }
+
+              const key = String(selectedRoutineNumber);
+              const current = Array.isArray(map[key]) ? map[key] : [];
+              if (!current.includes(playlistTitle)) current.push(playlistTitle);
+              map[key] = current;
+
+              localStorage.setItem(ROUTINE_PLAYLISTS_KEY, JSON.stringify(map));
+              setRoutinePlaylistAddMessage(
+                `agregado ${playlistTitle} a rutina ${selectedRoutineNumber}`
+              );
+            }}
+            className="mt-4 w-full rounded-xl gradient-button text-primary-foreground font-display font-bold text-sm shadow-soft py-3 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            agregar rutina a playlist
+          </button>
         </motion.div>
       )}
 
-      {/* Empty state message */}
-      <motion.div
-        className="mt-8 text-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <div className="w-16 h-16 rounded-full bg-pastel-purple/50 flex items-center justify-center mx-auto mb-4">
-          <Music size={24} className="text-primary" />
+      {createdPlaylists.length > 0 && (
+        <div className="mt-6 space-y-4">
+          <div className="p-4 rounded-2xl bg-pastel-lavender/20 border border-primary/20">
+            <p className="text-xs font-display font-semibold text-foreground mb-2">
+              Rutina seleccionada
+            </p>
+            {routineNumbers.length === 0 ? (
+              <p className="text-xs text-muted-foreground font-body">
+                Crea una rutina para poder sincronizar playlists.
+              </p>
+            ) : (
+              <select
+                value={selectedRoutineNumber ?? ""}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  setSelectedRoutineNumber(Number.isFinite(v) ? v : null);
+                }}
+                className="w-full rounded-xl bg-background/60 px-4 py-3 text-sm font-body outline-none border border-border focus:ring-2 focus:ring-primary/40"
+              >
+                {routineNumbers.map((n) => (
+                  <option key={n} value={n}>
+                    rutina {n}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          {createdPlaylists.map((pl, idx) => (
+            <motion.div
+              key={`${pl.title}-${idx}`}
+              className="p-4 rounded-2xl bg-card border border-border"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <p className="text-sm font-display font-semibold text-foreground mb-3">
+                {pl.title} guardada
+              </p>
+              <div className="space-y-2">
+                {pl.songs.map((s) => (
+                  <div key={s.id} className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-display font-semibold text-foreground truncate">{s.title}</p>
+                    <p className="text-[11px] text-muted-foreground font-body truncate">{s.artist}</p>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (selectedRoutineNumber == null) return;
+                  const playlistTitle = pl.title;
+
+                  const raw = localStorage.getItem(ROUTINE_PLAYLISTS_KEY);
+                  let map: Record<string, string[]> = {};
+                  try {
+                    map = raw ? (JSON.parse(raw) as Record<string, string[]>) : {};
+                  } catch {
+                    map = {};
+                  }
+
+                  const key = String(selectedRoutineNumber);
+                  const current = Array.isArray(map[key]) ? map[key] : [];
+                  if (!current.includes(playlistTitle)) current.push(playlistTitle);
+                  map[key] = current;
+
+                  localStorage.setItem(ROUTINE_PLAYLISTS_KEY, JSON.stringify(map));
+                  setRoutinePlaylistAddMessage(
+                    `agregado ${playlistTitle} a rutina ${selectedRoutineNumber}`
+                  );
+                }}
+                disabled={selectedRoutineNumber == null}
+                className="mt-4 w-full rounded-xl gradient-button text-primary-foreground font-display font-bold text-sm shadow-soft py-3 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                agregar rutina a playlist
+              </button>
+            </motion.div>
+          ))}
+
+          {routinePlaylistAddMessage && (
+            <p className="text-[11px] text-muted-foreground font-body text-center">
+              {routinePlaylistAddMessage}
+            </p>
+          )}
         </div>
-        <p className="text-sm text-muted-foreground font-body">
-          Aún no tienes playlists.<br />
-          ¡Crea tu primera playlist para comenzar!
-        </p>
-      </motion.div>
+      )}
+
+      {/* Empty state message */}
+      {!showCreatePlaylist && !selectedYtmPlaylist && createdPlaylists.length === 0 && (
+        <motion.div
+          className="mt-8 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="w-16 h-16 rounded-full bg-pastel-purple/50 flex items-center justify-center mx-auto mb-4">
+            <Music size={24} className="text-primary" />
+          </div>
+          <p className="text-sm text-muted-foreground font-body">
+            Aún no tienes playlists.<br />
+            ¡Crea tu primera playlist para comenzar!
+          </p>
+        </motion.div>
+      )}
     </div>
   );
 };

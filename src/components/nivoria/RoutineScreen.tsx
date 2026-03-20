@@ -27,6 +27,17 @@ const defaultSlots: TimeSlot[] = [
 const hours = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0"));
 const minutes = ["00", "15", "30", "45"];
 
+type SavedRoutine = {
+  id: string;
+  number: number;
+  slots: TimeSlot[];
+  reminders: CustomReminder[];
+  createdAt: number;
+};
+
+const ROUTINES_KEY = "nivoria.routines";
+const ROUTINE_PLAYLISTS_KEY = "nivoria.routines.playlistsByNumber";
+
 const RoutineScreen = () => {
   const [hasRoutine, setHasRoutine] = useState(false);
   const [slots, setSlots] = useState<TimeSlot[]>(defaultSlots);
@@ -41,6 +52,31 @@ const RoutineScreen = () => {
   const [newMinute, setNewMinute] = useState("00");
   const [newPeriod, setNewPeriod] = useState<"AM" | "PM">("AM");
   const [newMessage, setNewMessage] = useState("");
+
+  const [savedRoutines, setSavedRoutines] = useState<SavedRoutine[]>(() => {
+    try {
+      const raw = localStorage.getItem(ROUTINES_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as SavedRoutine[];
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter((r) => typeof r?.number === "number" && Array.isArray(r?.slots));
+    } catch {
+      return [];
+    }
+  });
+
+  const [routinePlaylistsByNumber] = useState<Record<string, string[]>>(() => {
+    try {
+      const raw = localStorage.getItem(ROUTINE_PLAYLISTS_KEY);
+      if (!raw) return {};
+      const parsed = JSON.parse(raw) as Record<string, string[]>;
+      if (!parsed || typeof parsed !== "object") return {};
+      return parsed;
+    } catch {
+      return {};
+    }
+  });
+  const [lastCreatedRoutineNumber, setLastCreatedRoutineNumber] = useState<number | null>(null);
 
   const updateSlot = (i: number, activity: string) => {
     setSlots(prev => prev.map((s, j) => j === i ? { ...s, activity } : s));
@@ -69,20 +105,88 @@ const RoutineScreen = () => {
     setReminders(prev => prev.filter(r => r.id !== id));
   };
 
+  const resetComposer = () => {
+    setSlots(defaultSlots);
+    setEditing(null);
+    setConfirmed(false);
+    setExpanded(true);
+    setReminders([]);
+    setShowReminderForm(false);
+    setNewMessage("");
+    setNewHour("08");
+    setNewMinute("00");
+    setNewPeriod("AM");
+  };
+
+  const persistRoutines = (next: SavedRoutine[]) => {
+    setSavedRoutines(next);
+    localStorage.setItem(ROUTINES_KEY, JSON.stringify(next));
+  };
+
   if (!hasRoutine) {
+    const routineCount = savedRoutines.length;
     return (
       <div className="px-6 pt-8 pb-24 flex flex-col items-center justify-center min-h-[700px] bg-pastel-pink/30">
         <motion.div className="text-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="w-16 h-16 rounded-full bg-pastel-lavender/50 flex items-center justify-center mx-auto mb-4">
             <Sparkles size={28} className="text-primary" />
           </div>
-          <h1 className="text-xl font-display font-bold text-foreground mb-2">¿NO TIENES RUTINA AUN?</h1>
-          <p className="text-sm text-muted-foreground mb-8 max-w-[250px]">
-            Empieza a organizar tus actividades diarias para alcanzar tus metas.
-          </p>
+
+          {routineCount === 0 ? (
+            <>
+              <h1 className="text-xl font-display font-bold text-foreground mb-2">¿NO TIENES RUTINA AUN?</h1>
+              <p className="text-sm text-muted-foreground mb-8 max-w-[250px]">
+                Empieza a organizar tus actividades diarias para alcanzar tus metas.
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="text-xl font-display font-bold text-foreground mb-2">
+                Tus rutinas
+              </h1>
+              {lastCreatedRoutineNumber ? (
+                <p className="text-sm text-muted-foreground mb-3 max-w-[250px]">
+                  guardaste rutina {lastCreatedRoutineNumber}
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground mb-3 max-w-[250px]">
+                  tienes {routineCount} rutina(s)
+                </p>
+              )}
+
+              <div className="mt-2 space-y-2">
+                {savedRoutines
+                  .slice()
+                  .sort((a, b) => a.number - b.number)
+                  .map((r) => (
+                    <div
+                      key={r.id}
+                      className="rounded-2xl px-4 py-3 border border-border bg-card/60 text-left"
+                    >
+                      <p className="text-sm font-display font-semibold text-foreground">
+                        rutina {r.number}
+                      </p>
+                      <p className="text-xs text-muted-foreground font-body">
+                        {r.slots.filter((s) => s.activity.trim()).length} actividad(es)
+                      </p>
+                      {((routinePlaylistsByNumber[String(r.number)] ?? [])).length > 0 && (
+                        <p className="text-[11px] text-muted-foreground font-body mt-1">
+                          {routinePlaylistsByNumber[String(r.number)]?.length ?? 0} playlist(s) sincronizadas
+                        </p>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            </>
+          )}
+
           <motion.button
-            onClick={() => setHasRoutine(true)}
-            className="flex items-center gap-2 mx-auto px-6 py-3 rounded-2xl gradient-button text-primary-foreground font-display font-semibold text-sm shadow-soft"
+            onClick={() => {
+              resetComposer();
+              setHasRoutine(true);
+              setLastCreatedRoutineNumber(null);
+            }}
+            className="flex items-center gap-2 mx-auto mt-6 px-6 py-3 rounded-2xl gradient-button text-primary-foreground font-display font-semibold text-sm shadow-soft"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -292,13 +396,32 @@ const RoutineScreen = () => {
 
       {/* Confirm */}
       <motion.button
-        onClick={() => setConfirmed(!confirmed)}
+        onClick={() => {
+          if (!confirmed) {
+            const nextNumber = savedRoutines.length + 1;
+            const next: SavedRoutine = {
+              id: crypto.randomUUID(),
+              number: nextNumber,
+              slots,
+              reminders,
+              createdAt: Date.now(),
+            };
+            const nextList = [...savedRoutines, next];
+            persistRoutines(nextList);
+            setLastCreatedRoutineNumber(nextNumber);
+            setConfirmed(true);
+            setHasRoutine(false);
+            resetComposer();
+          } else {
+            setConfirmed(true);
+          }
+        }}
         className={`w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-display font-semibold text-sm transition-all ${
           confirmed ? "bg-primary text-primary-foreground shadow-glow" : "gradient-button text-primary-foreground shadow-soft"
         }`}
         whileTap={{ scale: 0.98 }}
       >
-        {confirmed ? "✓ RUTINA CONFIRMADA" : "CONFIRMAR RUTINA"}
+        {confirmed ? `✓ RUTINA ${savedRoutines.length} CONFIRMADA` : "CONFIRMAR RUTINA"}
         {!confirmed && <CheckCircle size={16} />}
       </motion.button>
     </div>
