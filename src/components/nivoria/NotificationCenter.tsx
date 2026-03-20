@@ -61,6 +61,8 @@ interface NotificationCenterProps {
   notifications: Notification[];
   onDismiss: (id: string) => void;
   onClear: () => void;
+  soundEnabled: boolean;
+  onToggleSound: () => void;
 }
 
 const typeConfig = {
