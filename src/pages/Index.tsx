@@ -7,18 +7,37 @@ import PlaylistsScreen from "@/components/nivoria/PlaylistsScreen";
 import RoutineScreen from "@/components/nivoria/RoutineScreen";
 import ProfileScreen from "@/components/nivoria/ProfileScreen";
 import BottomNav from "@/components/nivoria/BottomNav";
+import NotificationCenter, { NotificationToast, useSimulatedNotifications } from "@/components/nivoria/NotificationCenter";
 
 export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine" | "profile";
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("login");
   const [userName, setUserName] = useState("");
+  const { notifications, toast, dismiss, clearAll, dismissToast } = useSimulatedNotifications();
 
   const isLoggedIn = screen !== "login" && screen !== "register";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="relative w-full max-w-[390px] h-[844px] rounded-[2.5rem] overflow-hidden shadow-soft border border-border gradient-card flex flex-col">
+        {/* Notification bar for logged-in users */}
+        {isLoggedIn && (
+          <div className="flex items-center justify-between px-6 pt-4 pb-1 shrink-0">
+            <p className="text-xs text-muted-foreground font-body">NIVORIA</p>
+            <NotificationCenter notifications={notifications} onDismiss={dismiss} onClear={clearAll} />
+          </div>
+        )}
+
+        {/* Toast overlay */}
+        <div className="absolute top-14 left-4 right-4 z-50">
+          <AnimatePresence>
+            {isLoggedIn && toast && (
+              <NotificationToast key={toast.id} notification={toast} onDismiss={dismissToast} />
+            )}
+          </AnimatePresence>
+        </div>
+
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
           <AnimatePresence mode="wait">
             {screen === "login" && (
