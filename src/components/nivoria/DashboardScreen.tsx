@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle, XCircle, Clock, Download, TrendingUp } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Download, TrendingUp, Stethoscope, Plus } from "lucide-react";
 
 interface DashboardScreenProps {
   userName: string;
+  onNavigateRoutine?: () => void;
 }
 
 type TaskStatus = "done" | "skipped" | "pending";

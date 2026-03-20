@@ -52,7 +52,7 @@ const Index = () => {
             )}
             {screen === "dashboard" && (
               <motion.div key="dashboard" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-                <DashboardScreen userName={userName} />
+                <DashboardScreen userName={userName} onNavigateRoutine={() => setScreen("routine")} />
               </motion.div>
             )}
             {screen === "playlists" && (
