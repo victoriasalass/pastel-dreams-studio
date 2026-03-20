@@ -7,9 +7,18 @@ import PlaylistsScreen from "@/components/nivoria/PlaylistsScreen";
 import RoutineScreen from "@/components/nivoria/RoutineScreen";
 import ProfileScreen from "@/components/nivoria/ProfileScreen";
 import RachaScreen from "@/components/nivoria/RachaScreen";
+import RachaInformacionScreen from "@/components/nivoria/RachaInformacionScreen";
 import BottomNav from "@/components/nivoria/BottomNav";
 
-export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine" | "profile" | "racha";
+export type Screen =
+  | "login"
+  | "register"
+  | "dashboard"
+  | "playlists"
+  | "routine"
+  | "profile"
+  | "racha"
+  | "rachaInfo";
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("login");
@@ -74,6 +83,7 @@ const Index = () => {
                   onLogout={() => { setUserName(""); navigate("login"); }}
                   onNavigatePlaylists={() => navigate("playlists")}
                   onNavigateRacha={() => navigate("racha")}
+                  onNavigateInformacion={() => navigate("rachaInfo")}
                   onBack={goBack}
                 />
               </motion.div>
@@ -81,6 +91,12 @@ const Index = () => {
             {screen === "racha" && (
               <motion.div key="racha" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
                 <RachaScreen onBack={goBack} />
+              </motion.div>
+            )}
+
+            {screen === "rachaInfo" && (
+              <motion.div key="rachaInfo" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+                <RachaInformacionScreen onBack={goBack} />
               </motion.div>
             )}
           </AnimatePresence>

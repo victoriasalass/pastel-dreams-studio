@@ -6,9 +6,11 @@ interface ProfileScreenProps {
   /** Abre la pantalla de racha (cumplimiento) */
   onNavigateRacha?: () => void;
   onBack?: () => void;
+  /** Abre una pantalla distinta con información de la racha */
+  onNavigateInformacion?: () => void;
 }
 
-const ProfileScreen = ({ userName, onNavigateRacha, onBack }: ProfileScreenProps) => {
+const ProfileScreen = ({ userName, onNavigateRacha, onNavigateInformacion, onBack }: ProfileScreenProps) => {
   return (
     <div className="relative px-6 pt-12 pb-24 bg-pastel-pink/30 min-h-full">
       {onBack && (
@@ -110,6 +112,15 @@ const ProfileScreen = ({ userName, onNavigateRacha, onBack }: ProfileScreenProps
             <span aria-hidden="true">🔥</span>
             racha
           </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onNavigateInformacion?.()}
+          disabled={!onNavigateInformacion}
+          className="mt-2 w-full rounded-2xl bg-pastel-purple/12 border border-pastel-purple/25 px-4 py-3 text-sm font-display font-bold text-foreground shadow-soft transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          informacion
         </button>
       </div>
     </div>

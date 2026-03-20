@@ -11,7 +11,6 @@ type SavedRoutine = {
 
 const ROUTINES_KEY = "nivoria.routines";
 const ROUTINE_PLAYLISTS_KEY = "nivoria.routines.playlistsByNumber";
-
 const RachaScreen = ({ onBack }: { onBack?: () => void }) => {
   const [routines, setRoutines] = useState<SavedRoutine[]>([]);
   const [playlistsByNumber, setPlaylistsByNumber] = useState<Record<string, string[]>>({});
@@ -44,6 +43,7 @@ const RachaScreen = ({ onBack }: { onBack?: () => void }) => {
     } catch {
       // ignore
     }
+
   }, []);
 
   const stats = useMemo(() => {
@@ -322,6 +322,7 @@ const RachaScreen = ({ onBack }: { onBack?: () => void }) => {
             })
         )}
       </div>
+
     </div>
   );
 };
