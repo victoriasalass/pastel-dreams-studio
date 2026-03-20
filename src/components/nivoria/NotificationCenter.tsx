@@ -1,6 +1,52 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, X, CheckCircle, Clock, AlertTriangle } from "lucide-react";
+import { Bell, X, CheckCircle, Clock, AlertTriangle, Volume2, VolumeX } from "lucide-react";
+
+// Notification sound using Web Audio API
+const playNotificationSound = (type: "reminder" | "success" | "warning") => {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+
+    if (type === "reminder") {
+      osc.frequency.setValueAtTime(660, ctx.currentTime);
+      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
+      osc.type = "sine";
+    } else if (type === "success") {
+      osc.frequency.setValueAtTime(523, ctx.currentTime);
+      osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
+      osc.frequency.setValueAtTime(784, ctx.currentTime + 0.2);
+      osc.type = "sine";
+    } else {
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      osc.frequency.setValueAtTime(370, ctx.currentTime + 0.15);
+      osc.type = "triangle";
+    }
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.5);
+    setTimeout(() => ctx.close(), 1000);
+  } catch {
+    // Audio not supported
+  }
+};
+
+const triggerVibration = (type: "reminder" | "success" | "warning") => {
+  if (!navigator.vibrate) return;
+  if (type === "warning") {
+    navigator.vibrate([100, 50, 100, 50, 150]);
+  } else if (type === "success") {
+    navigator.vibrate([80, 40, 80]);
+  } else {
+    navigator.vibrate([120, 60, 120]);
+  }
+};
 
 export interface Notification {
   id: string;
