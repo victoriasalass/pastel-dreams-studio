@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit3, CheckCircle, ChevronDown, Sparkles, Bell, X, Clock } from "lucide-react";
+import { Plus, CreditCard as Edit3, CircleCheck as CheckCircle, ChevronDown, Sparkles, Bell, X, Clock } from "lucide-react";
 
 interface TimeSlot {
   time: string;
@@ -16,10 +16,6 @@ export interface CustomReminder {
   active: boolean;
 }
 
-interface RoutineScreenProps {
-  onAddReminder?: (title: string, message: string) => void;
-}
-
 const defaultSlots: TimeSlot[] = [
   { time: "07:00 AM", activity: "" },
   { time: "08:00 AM", activity: "" },
@@ -31,7 +27,7 @@ const defaultSlots: TimeSlot[] = [
 const hours = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0"));
 const minutes = ["00", "15", "30", "45"];
 
-const RoutineScreen = ({ onAddReminder }: RoutineScreenProps) => {
+const RoutineScreen = () => {
   const [hasRoutine, setHasRoutine] = useState(false);
   const [slots, setSlots] = useState<TimeSlot[]>(defaultSlots);
   const [editing, setEditing] = useState<number | null>(null);
@@ -63,12 +59,6 @@ const RoutineScreen = ({ onAddReminder }: RoutineScreenProps) => {
     setReminders(prev => [...prev, reminder]);
     setShowReminderForm(false);
     setNewMessage("");
-
-    // Fire a notification
-    onAddReminder?.(
-      `⏰ Recordatorio ${newHour}:${newMinute} ${newPeriod}`,
-      newMessage.trim()
-    );
   };
 
   const toggleReminder = (id: string) => {

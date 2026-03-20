@@ -7,36 +7,18 @@ import PlaylistsScreen from "@/components/nivoria/PlaylistsScreen";
 import RoutineScreen from "@/components/nivoria/RoutineScreen";
 import ProfileScreen from "@/components/nivoria/ProfileScreen";
 import BottomNav from "@/components/nivoria/BottomNav";
-import NotificationCenter, { NotificationToast, useSimulatedNotifications } from "@/components/nivoria/NotificationCenter";
 
 export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine" | "profile";
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("login");
   const [userName, setUserName] = useState("");
-  const { notifications, toast, addNotification, dismiss, clearAll, dismissToast, soundEnabled, toggleSound } = useSimulatedNotifications();
 
   const isLoggedIn = screen !== "login" && screen !== "register";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="relative w-full max-w-[390px] h-[844px] rounded-[2.5rem] overflow-hidden shadow-soft border border-border gradient-card flex flex-col">
-        {/* Notification bar for logged-in users */}
-        {isLoggedIn && (
-          <div className="flex items-center justify-between px-6 pt-4 pb-1 shrink-0">
-            <p className="text-xs text-muted-foreground font-body">NIVORIA</p>
-            <NotificationCenter notifications={notifications} onDismiss={dismiss} onClear={clearAll} soundEnabled={soundEnabled} onToggleSound={toggleSound} />
-          </div>
-        )}
-
-        {/* Toast overlay */}
-        <div className="absolute top-14 left-4 right-4 z-50">
-          <AnimatePresence>
-            {isLoggedIn && toast && (
-              <NotificationToast key={toast.id} notification={toast} onDismiss={dismissToast} />
-            )}
-          </AnimatePresence>
-        </div>
 
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
           <AnimatePresence mode="wait">
@@ -62,9 +44,7 @@ const Index = () => {
             )}
             {screen === "routine" && (
               <motion.div key="routine" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-                <RoutineScreen onAddReminder={(title, message) => {
-                  addNotification({ title, message, type: "reminder", time: new Date().toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" }) });
-                }} />
+                <RoutineScreen />
               </motion.div>
             )}
             {screen === "profile" && (
