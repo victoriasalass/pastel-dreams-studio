@@ -39,7 +39,7 @@ const ProfileScreen = ({ userName, onNavigateRacha, onNavigateInformacion, onBac
       )}
       <div className="flex flex-col items-center">
         <h1
-          className="text-5xl font-display font-black text-black drop-shadow-[0_3px_0_rgba(0,0,0,0.35)] mb-6 tracking-tight"
+          className="text-7xl font-display font-black text-black drop-shadow-[0_3px_0_rgba(0,0,0,0.35)] mb-8 tracking-tight"
         >
           perfil
         </h1>
@@ -98,7 +98,7 @@ const ProfileScreen = ({ userName, onNavigateRacha, onNavigateInformacion, onBac
           </div>
         </div>
 
-        <p className="text-sm font-body font-semibold text-foreground text-center break-words">
+        <p className="text-xl font-body font-semibold text-foreground text-center break-words mb-6">
           @cutz333
         </p>
 
@@ -106,9 +106,9 @@ const ProfileScreen = ({ userName, onNavigateRacha, onNavigateInformacion, onBac
           type="button"
           onClick={onNavigateRacha}
           disabled={!onNavigateRacha}
-          className="mt-3 w-full rounded-2xl bg-pastel-purple/20 border border-pastel-purple/40 px-4 py-3 text-sm font-display font-bold text-foreground shadow-soft transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="mt-4 w-full rounded-2xl bg-pastel-purple/20 border border-pastel-purple/40 px-4 py-5 text-2xl font-display font-bold text-foreground shadow-soft transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span className="flex items-center justify-center gap-2">
+          <span className="flex items-center justify-center gap-3">
             <span aria-hidden="true">🔥</span>
             racha
           </span>
@@ -118,7 +118,7 @@ const ProfileScreen = ({ userName, onNavigateRacha, onNavigateInformacion, onBac
           type="button"
           onClick={() => onNavigateInformacion?.()}
           disabled={!onNavigateInformacion}
-          className="mt-2 w-full rounded-2xl bg-pastel-purple/12 border border-pastel-purple/25 px-4 py-3 text-sm font-display font-bold text-foreground shadow-soft transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="mt-3 w-full rounded-2xl bg-pastel-purple/12 border border-pastel-purple/25 px-4 py-5 text-2xl font-display font-bold text-foreground shadow-soft transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           informacion
         </button>
