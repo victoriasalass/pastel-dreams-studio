@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, CreditCard as Edit3, CircleCheck as CheckCircle, ChevronDown, Sparkles, Bell, X, Clock } from "lucide-react";
+import { Plus, CreditCard as Edit3, CircleCheck as CheckCircle, ChevronDown, Sparkles, Bell, X, Clock, ArrowLeft } from "lucide-react";
 
 interface TimeSlot {
   time: string;
@@ -38,7 +38,7 @@ type SavedRoutine = {
 const ROUTINES_KEY = "nivoria.routines";
 const ROUTINE_PLAYLISTS_KEY = "nivoria.routines.playlistsByNumber";
 
-const RoutineScreen = () => {
+const RoutineScreen = ({ onBack }: { onBack?: () => void }) => {
   const [hasRoutine, setHasRoutine] = useState(false);
   const [slots, setSlots] = useState<TimeSlot[]>(defaultSlots);
   const [editing, setEditing] = useState<number | null>(null);
@@ -126,7 +126,16 @@ const RoutineScreen = () => {
   if (!hasRoutine) {
     const routineCount = savedRoutines.length;
     return (
-      <div className="px-6 pt-8 pb-24 flex flex-col items-center justify-center min-h-[700px] bg-pastel-pink/30">
+      <div className="relative px-6 pt-8 pb-24 flex flex-col items-center justify-center min-h-[700px] bg-pastel-pink/30">
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="absolute left-4 top-4 w-10 h-10 rounded-2xl bg-white/40 border border-pink-200/60 flex items-center justify-center"
+          >
+            <ArrowLeft size={20} className="text-black" />
+          </button>
+        )}
         <motion.div className="text-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="w-16 h-16 rounded-full bg-pastel-lavender/50 flex items-center justify-center mx-auto mb-4">
             <Sparkles size={28} className="text-primary" />
@@ -198,7 +207,16 @@ const RoutineScreen = () => {
   }
 
   return (
-    <div className="px-6 pt-8 pb-24 bg-pastel-pink/30 min-h-full">
+    <div className="relative px-6 pt-8 pb-24 bg-pastel-pink/30 min-h-full">
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="absolute left-4 top-4 w-10 h-10 rounded-2xl bg-white/40 border border-pink-200/60 flex items-center justify-center"
+        >
+          <ArrowLeft size={20} className="text-black" />
+        </button>
+      )}
       <motion.div className="mb-6" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-display font-bold text-foreground">AÑADIR RUTINA+</h1>
       </motion.div>

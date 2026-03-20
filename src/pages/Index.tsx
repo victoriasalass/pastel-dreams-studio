@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LoginScreen from "@/components/nivoria/LoginScreen";
 import RegisterScreen from "@/components/nivoria/RegisterScreen";
@@ -14,8 +14,27 @@ export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("login");
   const [userName, setUserName] = useState("");
+  const [history, setHistory] = useState<Screen[]>(["login"]);
+  const historyRef = useRef(history);
+
+  useEffect(() => {
+    historyRef.current = history;
+  }, [history]);
 
   const isLoggedIn = screen !== "login" && screen !== "register";
+
+  const navigate = (next: Screen) => {
+    setHistory((h) => [...h, next]);
+    setScreen(next);
+  };
+
+  const goBack = () => {
+    const h = historyRef.current;
+    if (h.length <= 1) return;
+    const prev = h[h.length - 2];
+    setHistory(h.slice(0, -1));
+    setScreen(prev);
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -25,47 +44,48 @@ const Index = () => {
           <AnimatePresence mode="wait">
             {screen === "login" && (
               <motion.div key="login" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.3 }}>
-                <LoginScreen onLogin={(name) => { setUserName(name); setScreen("dashboard"); }} onRegister={() => setScreen("register")} />
+                <LoginScreen onLogin={(name) => { setUserName(name); navigate("dashboard"); }} onRegister={() => navigate("register")} />
               </motion.div>
             )}
             {screen === "register" && (
               <motion.div key="register" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                <RegisterScreen onBack={() => setScreen("login")} onRegister={(name) => { setUserName(name); setScreen("dashboard"); }} />
+                <RegisterScreen onBack={() => navigate("login")} onRegister={(name) => { setUserName(name); navigate("dashboard"); }} />
               </motion.div>
             )}
             {screen === "dashboard" && (
               <motion.div key="dashboard" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-                <DashboardScreen userName={userName} onNavigate={setScreen} />
+                <DashboardScreen userName={userName} onNavigate={navigate} onBack={goBack} />
               </motion.div>
             )}
             {screen === "playlists" && (
               <motion.div key="playlists" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-                <PlaylistsScreen />
+                <PlaylistsScreen onBack={goBack} />
               </motion.div>
             )}
             {screen === "routine" && (
               <motion.div key="routine" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-                <RoutineScreen />
+                <RoutineScreen onBack={goBack} />
               </motion.div>
             )}
             {screen === "profile" && (
               <motion.div key="profile" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
                 <ProfileScreen
                   userName={userName}
-                  onLogout={() => { setUserName(""); setScreen("login"); }}
-                  onNavigatePlaylists={() => setScreen("playlists")}
-                  onNavigateRacha={() => setScreen("racha")}
+                  onLogout={() => { setUserName(""); navigate("login"); }}
+                  onNavigatePlaylists={() => navigate("playlists")}
+                  onNavigateRacha={() => navigate("racha")}
+                  onBack={goBack}
                 />
               </motion.div>
             )}
             {screen === "racha" && (
               <motion.div key="racha" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-                <RachaScreen />
+                <RachaScreen onBack={goBack} />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-        {isLoggedIn && <BottomNav current={screen} onNavigate={setScreen} />}
+        {isLoggedIn && <BottomNav current={screen} onNavigate={navigate} />}
       </div>
     </div>
   );

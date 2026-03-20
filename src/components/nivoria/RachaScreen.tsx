@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Flame, CalendarDays, Music, Trophy, Sparkles, Zap } from "lucide-react";
+import { ArrowLeft, Flame, CalendarDays, Music, Trophy, Sparkles, Zap } from "lucide-react";
 
 type SavedRoutine = {
   id: string;
@@ -12,7 +12,7 @@ type SavedRoutine = {
 const ROUTINES_KEY = "nivoria.routines";
 const ROUTINE_PLAYLISTS_KEY = "nivoria.routines.playlistsByNumber";
 
-const RachaScreen = () => {
+const RachaScreen = ({ onBack }: { onBack?: () => void }) => {
   const [routines, setRoutines] = useState<SavedRoutine[]>([]);
   const [playlistsByNumber, setPlaylistsByNumber] = useState<Record<string, string[]>>({});
 
@@ -144,6 +144,15 @@ const RachaScreen = () => {
 
   return (
     <div className="px-6 pt-12 pb-24 bg-pastel-pink/30 min-h-full relative overflow-hidden">
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="absolute left-4 top-4 w-10 h-10 rounded-2xl bg-white/40 border border-pink-200/60 flex items-center justify-center z-10"
+        >
+          <ArrowLeft size={20} className="text-black" />
+        </button>
+      )}
       {/* Visual flare decorations */}
       <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[460px] h-[460px] rounded-full bg-gradient-to-br from-pink-500/15 via-pastel-purple/25 to-pink-500/10 blur-2xl" />
       <div className="pointer-events-none absolute top-10 left-6 w-16 h-16 rounded-2xl bg-pastel-purple/25 blur-xl" />
@@ -163,7 +172,7 @@ const RachaScreen = () => {
         </motion.div>
 
         <div className="flex-1">
-          <h1 className="text-3xl font-display font-black text-foreground drop-shadow-[0_2px_0_rgba(0,0,0,0.15)]">
+          <h1 className="text-3xl font-display font-black text-black drop-shadow-[0_2px_0_rgba(0,0,0,0.15)]">
             racha
           </h1>
           <p className="text-xs text-muted-foreground font-body">

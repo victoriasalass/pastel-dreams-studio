@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Music, Plus } from "lucide-react";
+import { ArrowLeft, Music, Plus } from "lucide-react";
 
 declare global {
   interface Window {
@@ -39,7 +39,7 @@ type Song = {
   artist: string;
 };
 
-const PlaylistsScreen = () => {
+const PlaylistsScreen = ({ onBack }: { onBack?: () => void }) => {
   const [showSpotifyConnect, setShowSpotifyConnect] = useState(false);
   const [showYouTubeConnect, setShowYouTubeConnect] = useState(false);
   const [ytAccessToken, setYtAccessToken] = useState<string | null>(null);
@@ -254,7 +254,16 @@ const PlaylistsScreen = () => {
 
   if (!showSpotifyConnect && !showYouTubeConnect) {
     return (
-      <div className="px-6 pt-12 pb-24 bg-pastel-pink/30 min-h-full">
+      <div className="relative px-6 pt-12 pb-24 bg-pastel-pink/30 min-h-full">
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="absolute left-4 top-4 w-10 h-10 rounded-2xl bg-white/40 border border-pink-200/60 flex items-center justify-center"
+          >
+            <ArrowLeft size={20} className="text-black" />
+          </button>
+        )}
         {/* Header */}
         <motion.div 
           className="mb-8" 
@@ -314,7 +323,16 @@ const PlaylistsScreen = () => {
   }
 
   return (
-    <div className="px-6 pt-12 pb-24 bg-pastel-pink/30 min-h-full">
+    <div className="relative px-6 pt-12 pb-24 bg-pastel-pink/30 min-h-full">
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="absolute left-4 top-4 w-10 h-10 rounded-2xl bg-white/40 border border-pink-200/60 flex items-center justify-center"
+        >
+          <ArrowLeft size={20} className="text-black" />
+        </button>
+      )}
       {/* Header */}
       <motion.div 
         className="mb-8" 

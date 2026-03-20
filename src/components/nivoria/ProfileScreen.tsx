@@ -5,11 +5,36 @@ interface ProfileScreenProps {
   onNavigatePlaylists?: () => void;
   /** Abre la pantalla de racha (cumplimiento) */
   onNavigateRacha?: () => void;
+  onBack?: () => void;
 }
 
-const ProfileScreen = ({ userName, onNavigateRacha }: ProfileScreenProps) => {
+const ProfileScreen = ({ userName, onNavigateRacha, onBack }: ProfileScreenProps) => {
   return (
-    <div className="px-6 pt-12 pb-24 bg-pastel-pink/30 min-h-full">
+    <div className="relative px-6 pt-12 pb-24 bg-pastel-pink/30 min-h-full">
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="absolute left-4 top-4 w-10 h-10 rounded-2xl bg-white/40 border border-pink-200/60 flex items-center justify-center"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="black"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      )}
       <div className="flex flex-col items-center">
         <h1
           className="text-5xl font-display font-black text-black drop-shadow-[0_3px_0_rgba(0,0,0,0.35)] mb-6 tracking-tight"
