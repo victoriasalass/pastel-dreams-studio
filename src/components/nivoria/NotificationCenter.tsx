@@ -137,9 +137,14 @@ const NotificationCenter = ({ notifications, onDismiss, onClear, soundEnabled, o
           >
             <div className="flex justify-between items-center mb-3">
               <h3 className="font-display font-semibold text-sm text-foreground">Notificaciones</h3>
-              {notifications.length > 0 && (
-                <button onClick={onClear} className="text-[10px] text-primary font-body">Limpiar</button>
-              )}
+              <div className="flex items-center gap-2">
+                <button onClick={onToggleSound} className="text-muted-foreground hover:text-primary transition-colors" title={soundEnabled ? "Silenciar" : "Activar sonido"}>
+                  {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
+                </button>
+                {notifications.length > 0 && (
+                  <button onClick={onClear} className="text-[10px] text-primary font-body">Limpiar</button>
+                )}
+              </div>
             </div>
 
             {notifications.length === 0 ? (
