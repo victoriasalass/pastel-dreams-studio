@@ -5,9 +5,10 @@ import RegisterScreen from "@/components/nivoria/RegisterScreen";
 import DashboardScreen from "@/components/nivoria/DashboardScreen";
 import PlaylistsScreen from "@/components/nivoria/PlaylistsScreen";
 import RoutineScreen from "@/components/nivoria/RoutineScreen";
+import ProfileScreen from "@/components/nivoria/ProfileScreen";
 import BottomNav from "@/components/nivoria/BottomNav";
 
-export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine";
+export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine" | "profile";
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("login");
@@ -43,6 +44,11 @@ const Index = () => {
             {screen === "routine" && (
               <motion.div key="routine" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
                 <RoutineScreen />
+              </motion.div>
+            )}
+            {screen === "profile" && (
+              <motion.div key="profile" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+                <ProfileScreen userName={userName} onLogout={() => { setUserName(""); setScreen("login"); }} />
               </motion.div>
             )}
           </AnimatePresence>
