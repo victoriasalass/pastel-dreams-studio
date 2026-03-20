@@ -102,7 +102,7 @@ export const NotificationToast = ({ notification, onDismiss }: { notification: N
   );
 };
 
-const NotificationCenter = ({ notifications, onDismiss, onClear }: NotificationCenterProps) => {
+const NotificationCenter = ({ notifications, onDismiss, onClear, soundEnabled, onToggleSound }: NotificationCenterProps) => {
   const [open, setOpen] = useState(false);
   const unread = notifications.filter(n => !n.read).length;
 
