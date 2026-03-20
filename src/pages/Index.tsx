@@ -14,7 +14,7 @@ export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("login");
   const [userName, setUserName] = useState("");
-  const { notifications, toast, dismiss, clearAll, dismissToast } = useSimulatedNotifications();
+  const { notifications, toast, addNotification, dismiss, clearAll, dismissToast } = useSimulatedNotifications();
 
   const isLoggedIn = screen !== "login" && screen !== "register";
 
