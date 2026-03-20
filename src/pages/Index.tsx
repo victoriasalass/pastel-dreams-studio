@@ -6,9 +6,10 @@ import DashboardScreen from "@/components/nivoria/DashboardScreen";
 import PlaylistsScreen from "@/components/nivoria/PlaylistsScreen";
 import RoutineScreen from "@/components/nivoria/RoutineScreen";
 import ProfileScreen from "@/components/nivoria/ProfileScreen";
+import RachaScreen from "@/components/nivoria/RachaScreen";
 import BottomNav from "@/components/nivoria/BottomNav";
 
-export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine" | "profile";
+export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine" | "profile" | "racha";
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("login");
@@ -53,7 +54,13 @@ const Index = () => {
                   userName={userName}
                   onLogout={() => { setUserName(""); setScreen("login"); }}
                   onNavigatePlaylists={() => setScreen("playlists")}
+                  onNavigateRacha={() => setScreen("racha")}
                 />
+              </motion.div>
+            )}
+            {screen === "racha" && (
+              <motion.div key="racha" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+                <RachaScreen />
               </motion.div>
             )}
           </AnimatePresence>
