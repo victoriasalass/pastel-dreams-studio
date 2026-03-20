@@ -56,6 +56,7 @@ const PlaylistsScreen = () => {
   const [routineNumbers, setRoutineNumbers] = useState<number[]>([]);
   const [selectedRoutineNumber, setSelectedRoutineNumber] = useState<number | null>(null);
   const [routinePlaylistAddMessage, setRoutinePlaylistAddMessage] = useState<string | null>(null);
+  const [syncedPlaylistTitles, setSyncedPlaylistTitles] = useState<string[]>([]);
 
   const googleClientId = useMemo(() => import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined, []);
   const sampleSongs = useMemo<Song[]>(
@@ -134,6 +135,21 @@ const PlaylistsScreen = () => {
 
   useEffect(() => {
     setRoutinePlaylistAddMessage(null);
+  }, [selectedRoutineNumber]);
+
+  useEffect(() => {
+    if (selectedRoutineNumber == null) {
+      setSyncedPlaylistTitles([]);
+      return;
+    }
+    try {
+      const raw = localStorage.getItem(ROUTINE_PLAYLISTS_KEY);
+      const map = raw ? (JSON.parse(raw) as Record<string, string[]>) : {};
+      const list = Array.isArray(map[String(selectedRoutineNumber)]) ? map[String(selectedRoutineNumber)] : [];
+      setSyncedPlaylistTitles(list);
+    } catch {
+      setSyncedPlaylistTitles([]);
+    }
   }, [selectedRoutineNumber]);
 
   useEffect(() => {
@@ -538,6 +554,32 @@ const PlaylistsScreen = () => {
             </button>
           </div>
 
+          <div className="mt-4 p-4 rounded-2xl bg-pastel-lavender/20 border border-primary/20">
+            <p className="text-xs font-display font-semibold text-foreground mb-2">
+              Rutina para sincronizar
+            </p>
+            {routineNumbers.length === 0 ? (
+              <p className="text-xs text-muted-foreground font-body">
+                Crea una rutina para poder sincronizar playlists.
+              </p>
+            ) : (
+              <select
+                value={selectedRoutineNumber ?? ""}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  setSelectedRoutineNumber(Number.isFinite(v) ? v : null);
+                }}
+                className="w-full rounded-xl bg-background/60 px-4 py-3 text-sm font-body outline-none border border-border focus:ring-2 focus:ring-primary/40"
+              >
+                {routineNumbers.map((n) => (
+                  <option key={n} value={n}>
+                    rutina {n}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
           <button
             type="button"
             disabled={selectedRoutineNumber == null}
@@ -565,7 +607,7 @@ const PlaylistsScreen = () => {
             }}
             className="mt-4 w-full rounded-xl gradient-button text-primary-foreground font-display font-bold text-sm shadow-soft py-3 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            agregar rutina a playlist
+            agregar playlist a rutina {selectedRoutineNumber ?? ""}
           </button>
         </motion.div>
       )}
@@ -644,7 +686,7 @@ const PlaylistsScreen = () => {
                 disabled={selectedRoutineNumber == null}
                 className="mt-4 w-full rounded-xl gradient-button text-primary-foreground font-display font-bold text-sm shadow-soft py-3 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                agregar rutina a playlist
+                agregar playlist a rutina {selectedRoutineNumber ?? ""}
               </button>
             </motion.div>
           ))}
@@ -657,8 +699,77 @@ const PlaylistsScreen = () => {
         </div>
       )}
 
+      {/* Playlist completas */}
+      <div className="mt-6 p-4 rounded-2xl bg-pastel-lavender/20 border border-primary/20">
+        <p className="text-sm font-display font-semibold text-foreground mb-3">playlist completas</p>
+
+        <div className="mb-3">
+          <p className="text-[11px] text-muted-foreground font-body mb-2">Rutina</p>
+          {routineNumbers.length === 0 ? (
+            <p className="text-xs text-muted-foreground font-body">
+              Crea una rutina para poder ver playlists sincronizadas.
+            </p>
+          ) : (
+            <select
+              value={selectedRoutineNumber ?? ""}
+              onChange={(e) => {
+                const v = Number(e.target.value);
+                setSelectedRoutineNumber(Number.isFinite(v) ? v : null);
+              }}
+              className="w-full rounded-xl bg-background/60 px-4 py-3 text-sm font-body outline-none border border-border focus:ring-2 focus:ring-primary/40"
+            >
+              {routineNumbers.map((n) => (
+                <option key={n} value={n}>
+                  rutina {n}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+
+        {selectedRoutineNumber == null ? (
+          <p className="text-xs text-muted-foreground font-body">Selecciona una rutina.</p>
+        ) : syncedPlaylistTitles.length === 0 ? (
+          <p className="text-xs text-muted-foreground font-body">
+            Aún no hay playlists sincronizadas para esta rutina.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {syncedPlaylistTitles.map((title, idx) => {
+              const created = createdPlaylists.find((pl) => pl.title === title);
+              const ytm = selectedYtmPlaylist?.title === title ? selectedYtmPlaylist : null;
+
+              return (
+                <div key={`${title}-synced-${idx}`} className="rounded-2xl bg-card border border-border p-3">
+                  <p className="text-xs font-display font-bold text-foreground mb-2">{title}</p>
+                  {created ? (
+                    <div className="space-y-1">
+                      {created.songs.map((s) => (
+                        <div key={s.id} className="flex items-center justify-between gap-3">
+                          <p className="text-[11px] text-foreground truncate">{s.title}</p>
+                          <p className="text-[10px] text-muted-foreground truncate">{s.artist}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : ytm ? (
+                    <p className="text-[11px] text-muted-foreground font-body">
+                      {typeof ytm.itemCount === "number" ? `${ytm.itemCount} canciones` : "Playlist"}.
+                      <span className="block">Detalle no disponible aquí.</span>
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-muted-foreground font-body">
+                      Detalle de canciones no disponible aquí aún.
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       {/* Empty state message */}
-      {!showCreatePlaylist && !selectedYtmPlaylist && createdPlaylists.length === 0 && (
+      {!showCreatePlaylist && createdPlaylists.length === 0 && syncedPlaylistTitles.length === 0 && (
         <motion.div
           className="mt-8 text-center"
           initial={{ opacity: 0 }}
