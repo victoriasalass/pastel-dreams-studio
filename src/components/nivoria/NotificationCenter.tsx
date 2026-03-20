@@ -249,5 +249,5 @@ export const useSimulatedNotifications = () => {
     };
   }, [addNotification]);
 
-  return { notifications, toast, addNotification, dismiss, clearAll, dismissToast };
+  return { notifications, toast, addNotification, dismiss, clearAll, dismissToast, soundEnabled, toggleSound };
 };

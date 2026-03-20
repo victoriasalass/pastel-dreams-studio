@@ -25,7 +25,7 @@ const Index = () => {
         {isLoggedIn && (
           <div className="flex items-center justify-between px-6 pt-4 pb-1 shrink-0">
             <p className="text-xs text-muted-foreground font-body">NIVORIA</p>
-            <NotificationCenter notifications={notifications} onDismiss={dismiss} onClear={clearAll} />
+            <NotificationCenter notifications={notifications} onDismiss={dismiss} onClear={clearAll} soundEnabled={soundEnabled} onToggleSound={toggleSound} />
           </div>
         )}
 
