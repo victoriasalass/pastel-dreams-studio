@@ -5,6 +5,7 @@ import RegisterScreen from "@/components/nivoria/RegisterScreen";
 import DashboardScreen from "@/components/nivoria/DashboardScreen";
 import PlaylistsScreen from "@/components/nivoria/PlaylistsScreen";
 import RoutineScreen from "@/components/nivoria/RoutineScreen";
+import ProfileScreen from "@/components/nivoria/ProfileScreen";
 import BottomNav from "@/components/nivoria/BottomNav";
 
 export type Screen = "login" | "register" | "dashboard" | "playlists" | "routine";
